@@ -3,6 +3,7 @@ package com.terheyden.optional2;
 import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -101,12 +102,8 @@ public class Optional1<C> {
      * @return this, for chaining
      * @throws NoSuchElementException if either value is null
      */
-    public Optional1<C> throwIfEmpty(Supplier<? extends RuntimeException> exceptionSupplier) {
-
-        if (isEmpty()) {
-            throw exceptionSupplier.get();
-        }
-
+    public Optional1<C> throwIfEmpty(CheckedFunction0<? extends RuntimeException> exceptionSupplier) {
+        obj1.orElseThrow(exceptionSupplier.unchecked());
         return this;
     }
 
@@ -118,9 +115,8 @@ public class Optional1<C> {
      * @throws NoSuchElementException if either value is null
      */
     public Optional1<C> throwIfEmpty() {
-        return isPresent()
-            ? this
-            : throwIfEmpty(() -> new NullPointerException("First Optional2 value is null."));
+        obj1.orElseThrow();
+        return this;
     }
 
     /**
@@ -251,6 +247,7 @@ public class Optional1<C> {
      * Consume the value, if present.
      *
      * @return this, for chaining
+     * @see Optional#ifPresent(Consumer)
      */
     public Optional1<C> ifPresent(CheckedConsumer<? super C> consumer) {
         obj1.ifPresent(consumer.unchecked());
@@ -262,9 +259,25 @@ public class Optional1<C> {
      * or run the given runnable if the value is null.
      *
      * @return this, for chaining
+     * @see Optional#ifPresentOrElse(Consumer, Runnable)
      */
     public Optional1<C> ifPresentOrElse(CheckedConsumer<? super C> consumer, CheckedRunnable emptyAction) {
         obj1.ifPresentOrElse(consumer.unchecked(), emptyAction.unchecked());
+        return this;
+    }
+
+    /**
+     * Run the given {@link CheckedRunnable} if the value is null.
+     *
+     * @return this, for chaining
+     * @see Optional#ifPresent(Consumer)
+     */
+    public Optional1<C> ifEmpty(CheckedRunnable runIfEmpty) {
+
+        if (isEmpty()) {
+            runIfEmpty.unchecked().run();
+        }
+
         return this;
     }
 

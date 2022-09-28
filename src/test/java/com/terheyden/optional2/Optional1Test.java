@@ -18,23 +18,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Optional1Test unit tests.
  */
-public class Optional2Test {
+public class Optional1Test {
 
     @Nullable
     private static final String NULL_STR = null;
-    @Nullable private static final UUID NULL_UUID = null;
 
-    private Optional1<String> goodOpt1;
-    private Optional2<String, UUID> goodOpt2;
-    private Optional1<String> badOpt1;
-    private Optional2<String, UUID> badOpt2;
+    private Optional1<String> goodOpt;
+    private Optional1<String> badOpt;
 
     @BeforeEach
     public void beforeEach() {
-        goodOpt1 = Optional2.of("Cora");
-        badOpt1 = Optional2.ofNullable(NULL_STR);
-        goodOpt2 = Optional2.of("Cora", UUID.randomUUID());
-        badOpt2 = Optional2.ofNullable(NULL_STR, NULL_UUID);
+        goodOpt = Optional2.of("Cora");
+        badOpt = Optional2.ofNullable(NULL_STR);
     }
 
     @Test
@@ -42,7 +37,7 @@ public class Optional2Test {
 
         // Ideal scneario — two values that you then combine.
 
-        TestUser goodUser = goodOpt1
+        TestUser goodUser = goodOpt
             .andOf(name -> TestService.findUserId(name))
             .reduce((name, userId) -> TestService.loginUser(userId, name))
             .get();
@@ -50,7 +45,7 @@ public class Optional2Test {
         assertEquals("Cora", goodUser.userName());
 
         // Assert that when value1 is null, no actions are taken.
-        UUID nullUuid = badOpt1
+        UUID nullUuid = badOpt
             .filter(name -> name.length() > 0)         // This would throw...
             .map(name -> TestService.findUserId(name))
             .orElseNull();
@@ -61,8 +56,8 @@ public class Optional2Test {
     @Test
     public void testThrow() {
 
-        assertThrows(NoSuchElementException.class, () -> badOpt1.throwIfEmpty());
-        assertThrows(NoSuchElementException.class, () -> badOpt1.orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> badOpt.throwIfEmpty());
+        assertThrows(NoSuchElementException.class, () -> badOpt.orElseThrow());
     }
 
     @Test
@@ -70,76 +65,76 @@ public class Optional2Test {
 
         AtomicInteger count = new AtomicInteger(0);
 
-        badOpt1.runIfEmpty(count::incrementAndGet);
+        badOpt.runIfEmpty(count::incrementAndGet);
         assertEquals(1, count.get());
 
-        goodOpt1.runIfEmpty(count::incrementAndGet);
+        goodOpt.runIfEmpty(count::incrementAndGet);
         assertEquals(1, count.get());
     }
 
     @Test
     public void testGet() {
 
-        assertEquals("Cora", goodOpt1.get());
-        assertThrows(NoSuchElementException.class, () -> badOpt1.get());
+        assertEquals("Cora", goodOpt.get());
+        assertThrows(NoSuchElementException.class, () -> badOpt.get());
     }
 
     @Test
     public void testOr() {
 
-        assertEquals("Cora", goodOpt1.orElse("Cora2"));
-        assertEquals("Cora2", badOpt1.orElse("Cora2"));
-        assertEquals("Cora", goodOpt1.or(() -> badOpt1).get());
-        assertEquals("Cora", goodOpt1.or(badOpt1).get());
-        assertEquals("Cora", goodOpt1.or(Optional.of("Cora2")).get());
-        assertEquals("Cora", goodOpt1.or("Cora2").get());
-        assertEquals("Cora2", badOpt1.or("Cora2").get());
-        assertEquals("Cora2", badOpt1.or(Optional.of("Cora2")).get());
-        assertEquals("Cora2", badOpt1.or(Optional2.of("Cora2")).get());
-        assertEquals("Cora2", badOpt1.or(() -> Optional2.of("Cora2")).get());
+        assertEquals("Cora", goodOpt.orElse("Cora2"));
+        assertEquals("Cora2", badOpt.orElse("Cora2"));
+        assertEquals("Cora", goodOpt.or(() -> badOpt).get());
+        assertEquals("Cora", goodOpt.or(badOpt).get());
+        assertEquals("Cora", goodOpt.or(Optional.of("Cora2")).get());
+        assertEquals("Cora", goodOpt.or("Cora2").get());
+        assertEquals("Cora2", badOpt.or("Cora2").get());
+        assertEquals("Cora2", badOpt.or(Optional.of("Cora2")).get());
+        assertEquals("Cora2", badOpt.or(Optional2.of("Cora2")).get());
+        assertEquals("Cora2", badOpt.or(() -> Optional2.of("Cora2")).get());
     }
 
     @Test
     public void testIsPresent() {
 
-        assertTrue(goodOpt1.isPresent());
-        assertFalse(goodOpt1.isEmpty());
-        assertFalse(badOpt1.isPresent());
-        assertTrue(badOpt1.isEmpty());
+        assertTrue(goodOpt.isPresent());
+        assertFalse(goodOpt.isEmpty());
+        assertFalse(badOpt.isPresent());
+        assertTrue(badOpt.isEmpty());
 
         AtomicInteger count = new AtomicInteger(0);
 
-        goodOpt1.ifPresent(name -> count.incrementAndGet());
+        goodOpt.ifPresent(name -> count.incrementAndGet());
         assertEquals(1, count.get());
 
-        badOpt1.ifPresent(name -> count.incrementAndGet());
+        badOpt.ifPresent(name -> count.incrementAndGet());
         assertEquals(1, count.get());
 
-        goodOpt1.ifEmpty(count::incrementAndGet);
+        goodOpt.ifEmpty(count::incrementAndGet);
         assertEquals(1, count.get());
 
-        badOpt1.ifEmpty(count::incrementAndGet);
+        badOpt.ifEmpty(count::incrementAndGet);
         assertEquals(2, count.get());
     }
 
     @Test
     public void testFilter() {
 
-        Optional1<String> goodOpt2 = goodOpt1
+        Optional1<String> goodOpt2 = goodOpt
             .filter(name -> name.length() > 0)
             .map(String::toUpperCase);
 
         assertEquals("CORA", goodOpt2.get());
 
-        Optional1<String> badOpt2 = badOpt1.filter(name -> name.length() > 0);
+        Optional1<String> badOpt2 = badOpt.filter(name -> name.length() > 0);
         assertFalse(badOpt2.isPresent());
         assertThrows(NoSuchElementException.class, () -> badOpt2.get());
 
-        Optional1<String> goodOpt3 = goodOpt1.filter(name -> name.length() > 10);
+        Optional1<String> goodOpt3 = goodOpt.filter(name -> name.length() > 10);
         assertFalse(goodOpt3.isPresent());
         assertThrows(NoSuchElementException.class, () -> goodOpt3.get());
 
-        assertEquals(4, goodOpt1.flatMap(name -> Optional.of(name.length())).get());
+        assertEquals(4, goodOpt.flatMap(name -> Optional.of(name.length())).get());
         // name.length() would cause an NPE here, but it doesn't, so we know it's not being evaluated.
         assertFalse(badOpt2.flatMap(name -> Optional.of(name.length())).isPresent());
     }

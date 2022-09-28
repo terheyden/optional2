@@ -90,20 +90,6 @@ public class Optional2<C, D> {
     }
 
     /**
-     * Run the given {@link CheckedRunnable} if either value is null.
-     *
-     * @return this, for chaining
-     */
-    public Optional2<C, D> runIfEmpty(CheckedRunnable runIfEmpty) {
-
-        if (isEmpty()) {
-            runIfEmpty.unchecked().run();
-        }
-
-        return this;
-    }
-
-    /**
      * Returns a {@link Tuple2} containing both values, if present.
      * If either value is null, throws a {@link NoSuchElementException}.
      */
@@ -279,6 +265,7 @@ public class Optional2<C, D> {
      * Chainable version of {@link Optional#ifPresent(Consumer)}.
      *
      * @return this, for chaining
+     * @see Optional#ifPresent(Consumer)
      */
     public Optional2<C, D> ifPresent(CheckedConsumer<? super C> consumer1, CheckedConsumer<? super D> consumer2) {
 
@@ -296,6 +283,7 @@ public class Optional2<C, D> {
      * Chainable version of {@link Optional#ifPresent(Consumer)}.
      *
      * @return this, for chaining
+     * @see Optional#ifPresent(Consumer)
      */
     public Optional2<C, D> ifPresent(CheckedConsumer2<? super C, ? super D> consumer) {
 
@@ -323,6 +311,21 @@ public class Optional2<C, D> {
         }
 
         emptyAction.unchecked().run();
+        return this;
+    }
+
+    /**
+     * Run the given {@link CheckedRunnable} if either value is null.
+     *
+     * @return this, for chaining
+     * @see Optional#ifPresent(Consumer)
+     */
+    public Optional2<C, D> ifEmpty(CheckedRunnable runIfEmpty) {
+
+        if (isEmpty()) {
+            runIfEmpty.unchecked().run();
+        }
+
         return this;
     }
 
