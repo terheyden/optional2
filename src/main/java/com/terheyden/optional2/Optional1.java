@@ -150,13 +150,16 @@ public class Optional1<C> {
 
     /**
      * If this value is null, use the supplier to get a non-empty value to use instead.
+     * The supplier returns an {@link Optional} and not a {@link Optional2}
+     * because it's likely a more common use case, and {@code Optional2} can be converted
+     * to an {@link Optional}.
      *
      * @see Optional#or(Supplier)
      */
-    public Optional1<C> or(CheckedFunction0<? extends Optional1<C>> supplyIfEmpty) {
+    public Optional1<C> or(CheckedFunction0<Optional<C>> supplyIfEmpty) {
 
         return isEmpty()
-            ? supplyIfEmpty.unchecked().get()
+            ? new Optional1<>(supplyIfEmpty.unchecked().apply())
             : this;
     }
 

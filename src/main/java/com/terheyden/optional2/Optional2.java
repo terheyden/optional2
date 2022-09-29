@@ -125,17 +125,20 @@ public class Optional2<C, D> {
 
     /**
      * If the second value is null, use the supplier to get a non-empty value to use instead.
+     * The supplier returns an {@link Optional} and not a {@link Optional2}
+     * because it's likely a more common use case, and {@code Optional2} can be converted
+     * to an {@link Optional}.
      *
      * @see Optional#or(Supplier)
      */
-    public Optional2<C, D> or(CheckedFunction0<? extends Optional1<D>> supplyIfEmpty) {
+    public Optional2<C, D> or(CheckedFunction0<Optional<D>> supplyIfEmpty) {
 
         if (obj1.isEmpty()) {
             return empty();
         }
 
         return obj2.isEmpty()
-            ? new Optional2<>(obj1, supplyIfEmpty.unchecked().apply().getOptional())
+            ? new Optional2<>(obj1, supplyIfEmpty.unchecked().apply())
             : this;
     }
 

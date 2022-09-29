@@ -32,8 +32,4 @@ public final class TestService {
 
         return new TestUser(userId, userName);
     }
-
-    public static TestUser throwLoginUser(@Nullable UUID userId, @Nullable String userName) {
-        throw new IllegalStateException("IGNORE!");
-    }
 }

@@ -84,14 +84,14 @@ public class Optional1Test {
 
         assertEquals("Cora", goodOpt.orElse("Cora2"));
         assertEquals("Cora2", badOpt.orElse("Cora2"));
-        assertEquals("Cora", goodOpt.or(() -> badOpt).get());
+        assertEquals("Cora", goodOpt.or(() -> Optional.ofNullable(NULL_STR)).get());
         assertEquals("Cora", goodOpt.or(badOpt).get());
         assertEquals("Cora", goodOpt.or(Optional.of("Cora2")).get());
         assertEquals("Cora", goodOpt.or("Cora2").get());
         assertEquals("Cora2", badOpt.or("Cora2").get());
         assertEquals("Cora2", badOpt.or(Optional.of("Cora2")).get());
         assertEquals("Cora2", badOpt.or(Optional2.of("Cora2")).get());
-        assertEquals("Cora2", badOpt.or(() -> Optional2.of("Cora2")).get());
+        assertEquals("Cora2", badOpt.or(() -> Optional.of("Cora2")).get());
     }
 
     @Test
